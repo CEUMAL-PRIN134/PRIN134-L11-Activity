@@ -16,5 +16,21 @@ function moveTarget() {
   target.style.top = `${randomY}px`;
 }
 
+target.addEventListener('contextmenu', (event) => {
+  event.preventDefault(); 
+  score++;
+  scoreBoard.textContent = `Score: ${score}`;
+  moveTarget();
+});
+
+// ctrl + s
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+    event.preventDefault(); 
+    score = 0;
+    scoreBoard.textContent = `Score: ${score}`;
+  }
+});
+
 // Initial target position
 moveTarget();
