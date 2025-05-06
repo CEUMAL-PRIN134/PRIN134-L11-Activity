@@ -15,20 +15,22 @@ setupButton.addEventListener('click', setupGame);
 function setupGame() {
     // Clear previous game
     targets.forEach(target => {
-        gameArea.removeChild(target.element);
+        if (target.element.parentNode) {
+            gameArea.removeChild(target.element);
+        }
     });
     targets = [];
     score = 0;
-    sscoreBoard.textContent = `Score: ${score}`;
-    
+    scoreBoard.textContent = `Score: ${score}`; // Fixed typo here
+
     const numberOfTargets = parseInt(setupInput.value);
-    
+
     // Validate input
     if (isNaN(numberOfTargets) || numberOfTargets < 1 || numberOfTargets > 5) {
         alert('Please enter a number between 1 and 5');
         return;
     }
-    
+
     // Create targets
     for (let i = 1; i <= numberOfTargets; i++) {
         createTarget(i);
@@ -39,29 +41,31 @@ function createTarget(number) {
     const newTarget = document.createElement('div');
     newTarget.className = 'target';
     newTarget.textContent = number;
-    
-    newTarget.style.position = 'absolute';
-    newTarget.style.width = '50px';
-    newTarget.style.height = '50px';
-    newTarget.style.backgroundColor = 'red';
-    newTarget.style.borderRadius = '50%';
-    newTarget.style.cursor = 'pointer';
-    newTarget.style.display = 'flex';
-    newTarget.style.alignItems = 'center';
-    newTarget.style.justifyContent = 'center';
-    newTarget.style.color = 'white';
-    newTarget.style.fontWeight = 'bold';
-    
+
+    Object.assign(newTarget.style, {
+        position: 'absolute',
+        width: '50px',
+        height: '50px',
+        backgroundColor: 'red',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontWeight: 'bold'
+    });
+
     gameArea.appendChild(newTarget);
     moveTarget(newTarget);
-    
+
     const targetObj = {
         element: newTarget,
         number: number
     };
     targets.push(targetObj);
-    
-    newTarget.addEventListener('click', function() {
+
+    newTarget.addEventListener('click', function () {
         handleTargetClick(targetObj);
     });
 }
@@ -79,15 +83,13 @@ function handleTargetClick(targetObj) {
     score++;
     scoreBoard.textContent = `Score: ${score}`;
     targetObj.element.remove();
-    
-    // Find and remove from targets array
+
+    // Remove from array
     const index = targets.findIndex(t => t.number === targetObj.number);
     if (index !== -1) {
         targets.splice(index, 1);
     }
+
     
-    // If all targets are clicked
-    if (targets.length === 0) {
-        alert('You clicked all targets!');
-    }
 }
+
