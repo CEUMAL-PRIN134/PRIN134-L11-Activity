@@ -6,6 +6,8 @@ const setupButton = document.querySelector('#ins button');
 
 let score = 0;
 let targets = [];
+let nextExpected = 1;
+let totalTargets = 0;
 
 // Hide the original target initially
 originalTarget.style.display = 'none';
@@ -20,16 +22,18 @@ function setupGame() {
         }
     });
     targets = [];
-    score = 0;
-    scoreBoard.textContent = `Score: ${score}`; // Fixed typo here
+    nextExpected = 1;
+
+    scoreBoard.textContent = `Score: ${score}`;
 
     const numberOfTargets = parseInt(setupInput.value);
 
     // Validate input
     if (isNaN(numberOfTargets) || numberOfTargets < 1 || numberOfTargets > 5) {
-        alert('Please enter a number between 1 and 5');
-        return;
+        return; // Removed the alert
     }
+
+    totalTargets = numberOfTargets;
 
     // Create targets
     for (let i = 1; i <= numberOfTargets; i++) {
@@ -65,8 +69,10 @@ function createTarget(number) {
     };
     targets.push(targetObj);
 
-    newTarget.addEventListener('click', function () {
-        handleTargetClick(targetObj);
+    // Right-click only
+    newTarget.addEventListener('contextmenu', function (e) {
+        e.preventDefault(); // Prevent default right-click menu
+        handleTargetRightClick(targetObj);
     });
 }
 
@@ -79,17 +85,30 @@ function moveTarget(targetElement) {
     targetElement.style.top = `${Math.floor(Math.random() * maxY)}px`;
 }
 
-function handleTargetClick(targetObj) {
-    score++;
-    scoreBoard.textContent = `Score: ${score}`;
-    targetObj.element.remove();
+function handleTargetRightClick(targetObj) {
+    if (targetObj.number === nextExpected) {
+        targetObj.element.remove();
 
-    // Remove from array
-    const index = targets.findIndex(t => t.number === targetObj.number);
-    if (index !== -1) {
-        targets.splice(index, 1);
+        // Remove from array
+        const index = targets.findIndex(t => t.number === targetObj.number);
+        if (index !== -1) {
+            targets.splice(index, 1);
+        }
+
+        nextExpected++;
+
+        if (nextExpected > totalTargets) {
+            // Player clicked all in correct order
+            score += totalTargets;
+            scoreBoard.textContent = `Score: ${score}`;
+
+            // Reset game after short delay
+            setTimeout(() => {
+                setupGame();
+            }, 800);
+        }
     }
-
+    
     
 }
 
