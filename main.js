@@ -9,7 +9,7 @@ let targets = [];
 let nextExpected = 1;
 let totalTargets = 0;
 
-// Hide the original target initially
+
 originalTarget.style.display = 'none';
 
 setupButton.addEventListener('click', setupGame);
@@ -28,9 +28,9 @@ function setupGame() {
 
     const numberOfTargets = parseInt(setupInput.value);
 
-    // Validate input
+    
     if (isNaN(numberOfTargets) || numberOfTargets < 1 || numberOfTargets > 5) {
-        return; // Removed the alert
+        return; 
     }
 
     totalTargets = numberOfTargets;
@@ -69,9 +69,8 @@ function createTarget(number) {
     };
     targets.push(targetObj);
 
-    // Right-click only
     newTarget.addEventListener('contextmenu', function (e) {
-        e.preventDefault(); // Prevent default right-click menu
+        e.preventDefault(); // Right-click only
         handleTargetRightClick(targetObj);
     });
 }
@@ -89,7 +88,6 @@ function handleTargetRightClick(targetObj) {
     if (targetObj.number === nextExpected) {
         targetObj.element.remove();
 
-        // Remove from array
         const index = targets.findIndex(t => t.number === targetObj.number);
         if (index !== -1) {
             targets.splice(index, 1);
@@ -98,17 +96,21 @@ function handleTargetRightClick(targetObj) {
         nextExpected++;
 
         if (nextExpected > totalTargets) {
-            // Player clicked all in correct order
             score += totalTargets;
             scoreBoard.textContent = `Score: ${score}`;
 
-            // Reset game after short delay
             setTimeout(() => {
                 setupGame();
             }, 800);
         }
     }
-    
-    
 }
 
+// Ctrl + S 
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+    event.preventDefault();
+    score = 0;
+    scoreBoard.textContent = `Score: ${score}`;
+  }
+});
